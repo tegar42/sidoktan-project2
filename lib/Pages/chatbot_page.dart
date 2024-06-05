@@ -19,7 +19,13 @@ class ChatBotPage extends StatelessWidget {
             fontFamily: 'DMSerifDisplay',
           ),
         ),
-        backgroundColor: Colors.white, // Judul (header) halaman
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(
+            height: 1.0,
+            color: Colors.grey, // Ubah warna sesuai kebutuhan
+          ),
+        ), // Judul (header) halaman
       ),
       body: ListView(
         children: <Widget>[

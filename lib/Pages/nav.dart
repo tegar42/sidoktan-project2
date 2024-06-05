@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sidoktan/Pages/chatbot_page.dart';
+import 'package:sidoktan/Pages/iotlink_page.dart';
+import 'package:sidoktan/Pages/setting_page.dart';
 import 'package:sidoktan/Widgets/bottom_navbar.dart';
 // import 'package:sidoktan/pages/scan_menu.dart';
 // import 'package:sidoktan/pages/settings_page.dart';
@@ -18,8 +20,8 @@ class _NavState extends State<Nav> {
   final List<Widget> _pages = <Widget>[
     const HomePage(),
     const ChatBotPage(),
-    const Center(child: Text('IoT Link')),
-    const Center(child: Text('Setting')),
+    const IotlinkPage(),
+    const SettingsPage(),
   ];
 
   // Handle tab selection

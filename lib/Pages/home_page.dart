@@ -22,6 +22,8 @@ class _HomePageState extends State<HomePage> {
   final User currentUser = User(
     username: "Jordan Poole",
     profilePictureUrl: "assets/images/poole.png",
+    email: 'test@example.com',
+    password: 'password123',
   );
 
   void _addPost(User user) {
@@ -97,8 +99,20 @@ class _HomePageState extends State<HomePage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text(
-          'Sidoktan',
-          style: TextStyle(fontFamily: 'DMSerifDisplay'),
+          "siDokTan",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'DMSerifDisplay',
+          ),
+        ),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Divider(
+            height: 1.0,
+            color: Colors.grey, // Ubah warna sesuai kebutuhan
+          ),
         ),
         actions: [
           GestureDetector(
@@ -106,8 +120,12 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage(currentUser.profilePictureUrl),
+                radius: 20.0,
+                backgroundColor: const Color(0xFF5B5CDB),
+                child: CircleAvatar(
+                  radius: 18.0,
+                  backgroundImage: AssetImage(currentUser.profilePictureUrl),
+                ),
               ),
             ),
           ),
@@ -118,8 +136,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2.0),
+              padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 0.0),
               child: Column(
                 children: [
                   Row(
