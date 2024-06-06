@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sidoktan/Auth/login_or_register.dart';
+// import 'package:sidoktan/Auth/login_or_register.dart';
 // import 'package:sidoktan/pages/nav.dart';
+import 'package:sidoktan/Pages/scan_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5B5CDB)),
         fontFamily: "DMSans",
       ),
-      home: const LoginOrRegister(),
+      home: const ScanPage(),
     );
   }
 }
