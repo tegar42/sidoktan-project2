@@ -3,9 +3,8 @@ import 'package:sidoktan/Pages/chatbot_page.dart';
 import 'package:sidoktan/Pages/iotlink_page.dart';
 import 'package:sidoktan/Pages/setting_page.dart';
 import 'package:sidoktan/Widgets/bottom_navbar.dart';
-// import 'package:sidoktan/pages/scan_menu.dart';
-// import 'package:sidoktan/pages/settings_page.dart';
-import 'package:sidoktan/pages/home_page.dart';
+import 'package:sidoktan/Pages/scan_page.dart';
+import 'package:sidoktan/Pages/home_page.dart';
 
 class Nav extends StatefulWidget {
   const Nav({super.key});
@@ -47,7 +46,12 @@ class _NavState extends State<Nav> {
         width: 60, // Adjust the width
         height: 60, // Adjust the height
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ScanPage()),
+            );
+          },
           backgroundColor: const Color(0xFF5B5CDB),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28.0),
