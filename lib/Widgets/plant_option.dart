@@ -32,7 +32,7 @@ class PlantOption extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Image.asset(image, width: 100, height: 80),
+            Image.asset(image, width: 80, height: 50),
             const SizedBox(height: 8.0),
             Text(title, style: const TextStyle(fontSize: 16)),
           ],

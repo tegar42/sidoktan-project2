@@ -19,12 +19,16 @@ class HistoryCard extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: Image.asset(image, width: 50, height: 50),
-        title: Text('Disease name: $diseaseName'),
+        title: Text('Disease name: $diseaseName',
+            style: const TextStyle(fontSize: 14)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Confidence: ${confidence.toStringAsFixed(2)}%'),
-            Text('Date: $date'),
+            Text(
+              'Confidence: ${confidence.toStringAsFixed(2)}%',
+              style: const TextStyle(fontSize: 14),
+            ),
+            Text('Date: $date', style: const TextStyle(fontSize: 14)),
           ],
         ),
       ),
