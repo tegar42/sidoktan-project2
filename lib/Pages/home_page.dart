@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:sidoktan/Models/post_model.dart';
 import 'package:sidoktan/Models/user_model.dart';
-import 'package:sidoktan/Pages/profile_page.dart';
+import 'package:sidoktan/pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _postController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  final List<Post> _posts = [];
+  List<Post> _posts = [];
   File? _image;
 
   final User currentUser = User(
@@ -26,13 +26,33 @@ class _HomePageState extends State<HomePage> {
     password: 'password123',
   );
 
+  // final ApiService _apiService = ApiService();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _fetchPosts();
+  // }
+
+  // // Future<void> _fetchPosts() async {
+  // //   try {
+  // //     final posts = await _apiService.fetchPosts();
+  // //     setState(() {
+  // //       _posts = posts;
+  // //     });
+  // //   } catch (e) {
+  // //     // Handle error
+  // //     print(e);
+  // //   }
+  // // }
+
   void _addPost(User user) {
     if (_postController.text.isEmpty && _image == null) return;
 
     final newPost = Post(
       user: user,
       content: _postController.text,
-      imageUrl: _image?.path ?? '',
+      imageUrl: _image != null ? _image!.path : '',
       timestamp: DateTime.now(),
       isLiked: false,
       likeCount: 0,
@@ -51,6 +71,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _pickImageFromCamera() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
+      print('Image path from camera: ${image.path}');
       setState(() {
         _image = File(image.path);
       });
@@ -60,6 +81,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _pickImageFromGallery() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      print('Image path from camera: ${image.path}');
       setState(() {
         _image = File(image.path);
       });
@@ -111,7 +133,7 @@ class _HomePageState extends State<HomePage> {
           preferredSize: Size.fromHeight(1.0),
           child: Divider(
             height: 1.0,
-            color: Colors.grey, // Ubah warna sesuai kebutuhan
+            color: Colors.grey,
           ),
         ),
         actions: [
@@ -120,19 +142,14 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CircleAvatar(
-                radius: 20.0,
-                backgroundColor: const Color(0xFF5B5CDB),
-                child: CircleAvatar(
-                  radius: 18.0,
-                  backgroundImage: AssetImage(currentUser.profilePictureUrl),
-                ),
+                radius: 18.0,
+                backgroundImage: AssetImage(currentUser.profilePictureUrl),
               ),
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        // post maker
         child: Column(
           children: [
             Padding(
@@ -140,8 +157,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment
-                        .start, // Ensure the row aligns at the top
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         flex: 2,
@@ -178,17 +194,12 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       IconButton(
-                                        icon: const Icon(
-                                          Icons.camera_alt,
-                                          size: 20,
-                                        ),
+                                        icon: const Icon(Icons.camera_alt,
+                                            size: 20),
                                         onPressed: _pickImageFromCamera,
                                       ),
                                       IconButton(
-                                        icon: const Icon(
-                                          Icons.photo,
-                                          size: 20,
-                                        ),
+                                        icon: const Icon(Icons.photo, size: 20),
                                         onPressed: _pickImageFromGallery,
                                       ),
                                     ],
@@ -204,11 +215,9 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      backgroundColor: const Color(
-                                          0xFF5B5CDB), // Ubah warna latar belakang tombol
+                                      backgroundColor: const Color(0xFF5B5CDB),
                                       foregroundColor: Colors.white,
-                                      minimumSize: const Size(
-                                          100, 30), // Ubah warna teks tombol
+                                      minimumSize: const Size(100, 30),
                                     ),
                                     child: const Text('Post'),
                                   ),
@@ -228,9 +237,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const Divider(),
-            // post maker end //
-
-            // Post Page
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -252,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage(currentUser.profilePictureUrl),
+                                AssetImage(post.user.profilePictureUrl),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -266,6 +272,12 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(post.content),
+                                if (post.imageUrl.isNotEmpty)
+                                  Image.file(
+                                    File(post.imageUrl),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -291,10 +303,8 @@ class _HomePageState extends State<HomePage> {
                                     Row(
                                       children: [
                                         IconButton(
-                                          icon: const Icon(
-                                            Icons.comment,
-                                            size: 16,
-                                          ),
+                                          icon: const Icon(Icons.comment,
+                                              size: 16),
                                           onPressed: () {
                                             // Placeholder function for comment interaction
                                           },
@@ -318,7 +328,6 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            // post page end
           ],
         ),
       ),

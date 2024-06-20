@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sidoktan/Widgets/chatbot_card.dart';
 import 'package:sidoktan/Widgets/text_box.dart';
-import 'package:sidoktan/Pages/chat_screen.dart';
+import 'package:sidoktan/pages/chat_screen.dart';
 
 class ChatBotPage extends StatelessWidget {
   const ChatBotPage({super.key});

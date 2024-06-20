@@ -35,8 +35,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String _simulateResponse(String message) {
     // This is the simulated data we use to respond to the user's message
-    if (message.toLowerCase().contains("halo hai")) {
-      return "Halo! Ada yang bisa saya bantu?";
+    if (message.toLowerCase().contains("siapa kamu")) {
+      return "Halo! Aku Dok-tan. Ada yang bisa saya bantu?";
     } else if (message.toLowerCase().contains("cuaca")) {
       return "Cuaca hari ini cerah!";
     } else if (message.toLowerCase().contains("nama")) {

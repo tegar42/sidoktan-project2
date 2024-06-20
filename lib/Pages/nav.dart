@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sidoktan/Pages/chatbot_page.dart';
-import 'package:sidoktan/Pages/iotlink_page.dart';
-import 'package:sidoktan/Pages/setting_page.dart';
+import 'package:sidoktan/pages/chatbot_page.dart';
+import 'package:sidoktan/pages/iotlink_page.dart';
+import 'package:sidoktan/pages/setting_page.dart';
 import 'package:sidoktan/Widgets/bottom_navbar.dart';
-import 'package:sidoktan/Pages/scan_page.dart';
-import 'package:sidoktan/Pages/home_page.dart';
+import 'package:sidoktan/pages/scan_page.dart';
+import 'package:sidoktan/pages/home_page.dart';
 
 class Nav extends StatefulWidget {
   const Nav({super.key});
@@ -35,12 +35,9 @@ class _NavState extends State<Nav> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: _pages.elementAt(_selectedIndex),
-      bottomNavigationBar: SizedBox(
-        height: 60.0,
-        child: BottomNavBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: _onItemTapped,
-        ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
       floatingActionButton: SizedBox(
         width: 60, // Adjust the width

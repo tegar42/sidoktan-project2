@@ -20,51 +20,66 @@ class BottomNavBar extends StatelessWidget {
               icon: Icons.home_outlined,
               selectedIcon: Icons.home,
               label: 'Home',
-              index: 0),
+              index: 0,
+              iconSize: 26.0),
           _buildNavItem(
               icon: Icons.chat_outlined,
               selectedIcon: Icons.chat,
               label: 'ChatBot',
-              index: 1),
-          const SizedBox(width: 10), // Space untuk middle button
+              index: 1,
+              iconSize: 26.0),
+          const SizedBox(width: 20),
           _buildNavItem(
               icon: Icons.link,
               selectedIcon: Icons.link,
               label: 'IoT Link',
-              index: 2),
+              index: 2,
+              iconSize: 26.0),
           _buildNavItem(
               icon: Icons.person_rounded,
               selectedIcon: Icons.person_rounded,
               label: 'Setting',
-              index: 3),
+              index: 3,
+              iconSize: 26.0),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(
-      {required IconData icon,
-      required IconData selectedIcon,
-      required String label,
-      required int index}) {
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData selectedIcon,
+    required String label,
+    required int index,
+    required double iconSize,
+  }) {
     return InkWell(
       onTap: () => onItemTapped(index),
-      child: Column(
-        children: <Widget>[
-          Icon(selectedIndex == index ? selectedIcon : icon,
-              color: selectedIndex == index
-                  ? const Color(0xFF5B5CDB)
-                  : Colors.grey),
-          Text(
-            label,
-            style: TextStyle(
+      borderRadius: BorderRadius.circular(25),
+      child: SizedBox(
+        width: 80, // Adjust the width as needed
+        height: 100, // Adjust the height as needed
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              selectedIndex == index ? selectedIcon : icon,
               color: selectedIndex == index
                   ? const Color(0xFF5B5CDB)
                   : Colors.grey,
-              fontSize: 8,
+              size: iconSize,
             ),
-          ),
-        ],
+            Text(
+              label,
+              style: TextStyle(
+                color: selectedIndex == index
+                    ? const Color(0xFF5B5CDB)
+                    : Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

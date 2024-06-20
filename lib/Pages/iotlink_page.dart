@@ -20,17 +20,16 @@ class IotlinkPage extends StatelessWidget {
           preferredSize: Size.fromHeight(1.0),
           child: Divider(
             height: 1.0,
-            color: Colors.grey, // Ubah warna sesuai kebutuhan
+            color: Colors.grey,
           ),
         ),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(
               Icons.more_vert,
-              color: Color(0xFF5B5CDB), // Ubah warna ikon di sini
+              color: Color(0xFF5B5CDB),
             ),
             onSelected: (value) {
-              // Handle dropdown menu item selection here
               if (value == 'API Management') {
                 // Navigate to API Management screen or perform related action
               } else if (value == 'UI Management') {
@@ -43,7 +42,7 @@ class IotlinkPage extends StatelessWidget {
                 height: 20,
                 child: Text(
                   'API Management',
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
               const PopupMenuItem<String>(
@@ -51,7 +50,7 @@ class IotlinkPage extends StatelessWidget {
                 height: 20,
                 child: Text(
                   'UI Management',
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ],

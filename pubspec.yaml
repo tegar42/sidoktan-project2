@@ -37,6 +37,7 @@ dependencies:
   image_picker: ^1.1.2
   intl: ^0.19.0
   timeago: ^3.6.1
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +64,7 @@ flutter:
   assets:
     - assets\images\chilis.png
     - assets\images\chilli.png
-    - assets\images\icon.png
+    - assets\images\sidoktan-logo.png
     - assets\images\kattan.png
     - assets\images\leaf.jpg
     - assets\images\logo.png
