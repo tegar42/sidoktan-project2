@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sidoktan/pages/chatbot_page.dart';
-import 'package:sidoktan/pages/iotlink_page.dart';
-import 'package:sidoktan/pages/setting_page.dart';
+import 'package:sidoktan/pages/chatbot/chatbot_page.dart';
+import 'package:sidoktan/pages/iotlink/iotlink_page.dart';
+import 'package:sidoktan/pages/settings/setting_page.dart';
 import 'package:sidoktan/Widgets/bottom_navbar.dart';
-import 'package:sidoktan/pages/scan_page.dart';
-import 'package:sidoktan/pages/home_page.dart';
+import 'package:sidoktan/pages/detection/scan_page.dart';
+// import 'package:sidoktan/pages/post/home_page.dart';
+import 'package:sidoktan/pages/post/post_page.dart';
 
 class Nav extends StatefulWidget {
   const Nav({super.key});
@@ -17,7 +18,8 @@ class _NavState extends State<Nav> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = <Widget>[
-    const HomePage(),
+    // const HomePage(),
+    const PostPage(),
     const ChatBotPage(),
     const IotlinkPage(),
     const SettingsPage(),

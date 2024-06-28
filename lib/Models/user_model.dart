@@ -1,10 +1,12 @@
 class User {
+  final int idUser;
   final String username;
   final String profilePictureUrl;
   final String email;
   final String password;
 
   User({
+    required this.idUser,
     required this.username,
     required this.profilePictureUrl,
     required this.email,
@@ -13,6 +15,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      idUser: json['idUser'],
       username: json['username'],
       profilePictureUrl: json['profile_picture_url'],
       email: json['email'],
@@ -22,6 +25,7 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      'idUser': idUser,
       'username': username,
       'profile_picture_url': profilePictureUrl,
       'email': email,
