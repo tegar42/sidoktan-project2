@@ -36,6 +36,7 @@ class _PostPageState extends State<PostPage> {
     super.initState();
     _loadCurrentUser();
     _loadPosts();
+    _sortPosts(_currentSortOption);
   }
 
   Future<void> _loadCurrentUser() async {
@@ -304,11 +305,13 @@ class _PostPageState extends State<PostPage> {
                           ),
                           DropdownButton<PostSortOption>(
                             value: _currentSortOption,
-                            icon: const Icon(Icons.arrow_drop_down),
+                            icon: const Icon(Icons.filter_alt),
                             onChanged: (PostSortOption? newValue) {
                               if (newValue != null) {
                                 setState(() {
-                                  _sortPosts(newValue);
+                                  _currentSortOption = newValue;
+                                  _sortPosts(
+                                      newValue); // Sort posts based on the selected option
                                 });
                               }
                             },
@@ -320,11 +323,11 @@ class _PostPageState extends State<PostPage> {
                               return DropdownMenuItem<PostSortOption>(
                                 value: value,
                                 child: Text(value == PostSortOption.latest
-                                    ? 'latest'
-                                    : 'popularity'),
+                                    ? 'Latest'
+                                    : 'Popularity'),
                               );
                             }).toList(),
-                          ),
+                          )
                         ],
                       ),
                     ),
