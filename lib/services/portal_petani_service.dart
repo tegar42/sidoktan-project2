@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PortalPetaniService {
-  static const String baseUrl = 'http://192.168.1.8:5000';
+  static const String baseUrl = 'http://10.0.2.2:5000';
   Future<List<dynamic>> getPosts(String status) async {
     final response =
         await http.get(Uri.parse('$baseUrl/portal_petani?status=$status'));
@@ -74,8 +74,8 @@ class PortalPetaniService {
   }
 
   Future<List<dynamic>> getComments(int postId) async {
-    final response = await http.get(
-        Uri.parse('$baseUrl/portal_petani/komentar?id_portal_petani=$postId'));
+    final response = await http
+        .get(Uri.parse('$baseUrl/portal_petani/komentar?id_post=$postId'));
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -99,6 +99,22 @@ class PortalPetaniService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to add comment');
+    }
+  }
+
+  Future<Map<int, int>> getCommentCounts() async {
+    final response =
+        await http.get(Uri.parse('$baseUrl/portal_petani/get_comment_post'));
+
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      Map<int, int> commentCounts = {};
+      for (var item in jsonData['data']) {
+        commentCounts[item['id_portal_petani']] = item['total_comment'];
+      }
+      return commentCounts;
+    } else {
+      throw Exception('Failed to load comment counts');
     }
   }
 

@@ -45,6 +45,8 @@ class Komentar {
   final int idPortalPetani;
   final String isiKomentar;
   final DateTime timestamp;
+  String? username;
+  String? fotoUser;
 
   Komentar({
     required this.idKomentar,
@@ -52,6 +54,8 @@ class Komentar {
     required this.idPortalPetani,
     required this.isiKomentar,
     required this.timestamp,
+    this.username,
+    this.fotoUser,
   });
 
   factory Komentar.fromJson(Map<String, dynamic> json) {

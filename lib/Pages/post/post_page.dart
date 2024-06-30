@@ -36,13 +36,12 @@ class _PostPageState extends State<PostPage> {
     super.initState();
     _loadCurrentUser();
     _loadPosts();
-    _currentSortOption = PostSortOption.latest;
   }
 
   Future<void> _loadCurrentUser() async {
     try {
       final user = await _userService.getUser(8);
-      if (user != null && user['data'] != null) {
+      if (user['data'] != null) {
         setState(() {
           _currentUser = Users.fromJson(user['data']);
         });
@@ -62,17 +61,16 @@ class _PostPageState extends State<PostPage> {
       });
 
       final posts = await _portalPetaniService.getPosts('publish');
+      final commentCounts = await _portalPetaniService.getCommentCounts();
 
       for (var postJson in posts) {
         final post = PortalPetani.fromJson(postJson);
 
-        final comments =
-            await _portalPetaniService.getComments(post.idPortalPetani);
-        post.commentCount = comments.length;
-
         final totalLikes =
             await _portalPetaniService.getLikes(post.idPortalPetani);
         post.likes = totalLikes;
+
+        post.commentCount = commentCounts[post.idPortalPetani] ?? 0;
 
         setState(() {
           _posts.add(post);
@@ -114,7 +112,7 @@ class _PostPageState extends State<PostPage> {
     if (filename == null || filename.isEmpty) {
       return null;
     }
-    const baseUrl = 'http://192.168.1.8:5000/images/portal_petani/';
+    const baseUrl = 'http://10.0.2.2:5000/images/portal_petani/';
     return '$baseUrl$filename';
   }
 
@@ -188,7 +186,30 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _handleRefresh() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     await _loadPosts();
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _navigateToComments(int postId) {
+    if (_currentUser != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => CommentPage(
+            postId: postId,
+            currentUser: _currentUser!, // Pass currentUser to CommentPage
+          ),
+        ),
+      );
+    } else {
+      print('Current user is null or not loaded yet.');
+    }
   }
 
   void _showSortOptions(BuildContext context) {
@@ -266,8 +287,8 @@ class _PostPageState extends State<PostPage> {
                       image: _image,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      decoration: BoxDecoration(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      decoration: const BoxDecoration(
                         border: Border(
                           top: BorderSide(width: 1.0, color: Colors.grey),
                           bottom: BorderSide(width: 1.0, color: Colors.grey),
@@ -389,14 +410,8 @@ class _PostPageState extends State<PostPage> {
                                                       Icons.comment,
                                                       size: 16),
                                                   onPressed: () {
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            CommentPage(
-                                                                postId: post
-                                                                    .idPortalPetani),
-                                                      ),
-                                                    );
+                                                    _navigateToComments(
+                                                        post.idPortalPetani);
                                                   },
                                                 ),
                                                 Text(

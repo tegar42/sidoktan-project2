@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sidoktan/models/portal_petani.dart';
-import 'package:sidoktan/models/user_model.dart';
+import 'package:sidoktan/models/user.dart';
 import 'package:sidoktan/services/portal_petani_service.dart';
+import 'package:sidoktan/services/user_service.dart'; // Import UserService
 
 class CommentPage extends StatefulWidget {
   final int postId;
+  final Users currentUser; // Add currentUser parameter
 
-  const CommentPage({super.key, required this.postId});
+  const CommentPage({Key? key, required this.postId, required this.currentUser})
+      : super(key: key);
 
   @override
   State<CommentPage> createState() => _CommentPageState();
@@ -15,7 +18,9 @@ class CommentPage extends StatefulWidget {
 class _CommentPageState extends State<CommentPage> {
   final TextEditingController _commentController = TextEditingController();
   final PortalPetaniService _portalPetaniService = PortalPetaniService();
-  List<Komentar> _comments = [];
+  final ScrollController _scrollController = ScrollController();
+  final UserService _userService = UserService(); // Instantiate UserService
+  final List<Komentar> _comments = [];
 
   @override
   void initState() {
@@ -26,9 +31,24 @@ class _CommentPageState extends State<CommentPage> {
   Future<void> _fetchComments() async {
     try {
       final comments = await _portalPetaniService.getComments(widget.postId);
-      setState(() {
-        _comments = comments.map((json) => Komentar.fromJson(json)).toList();
-      });
+
+      // Iterate through comments to fetch user information
+      for (var jsonComment in comments) {
+        final comment = Komentar.fromJson(jsonComment);
+
+        // Fetch user information using UserService
+        final userResponse = await _userService.getUser(comment.idUser);
+        if (userResponse.containsKey('data')) {
+          final userData = userResponse['data'];
+          // Update comment with user information
+          comment.username = userData['nama'];
+          comment.fotoUser = _userService.getProfileImageUrl(userData['foto']);
+        }
+
+        setState(() {
+          _comments.add(comment);
+        });
+      }
     } catch (e) {
       print('Error fetching comments: $e');
       // Handle error as per your application's needs
@@ -40,19 +60,22 @@ class _CommentPageState extends State<CommentPage> {
     if (commentText.isEmpty) return;
 
     try {
-      // Assuming currentUser is available or can be retrieved from somewhere
-      final User currentUser = User(
-          idUser: 7,
-          username: "Jordan Poole",
-          profilePictureUrl: "assets/images/poole.png",
-          email: 'test@example.com',
-          password: 'password123');
+      final Users currentUser =
+          widget.currentUser; // Use currentUser from widget
 
       await _portalPetaniService.addComment(
-          currentUser.idUser, widget.postId, commentText);
+          currentUser.id, widget.postId, commentText);
 
       // After successfully adding comment, refresh comments list
       await _fetchComments();
+      // Close keyboard
+      FocusScope.of(context).unfocus();
+      // Scroll to the bottom
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.easeOut,
+      );
 
       // Clear input field after adding comment
       _commentController.clear();
@@ -66,18 +89,40 @@ class _CommentPageState extends State<CommentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Comments'),
+        title: const Text(
+          "Comments",
+          style: TextStyle(
+            color: Color(0xFF5B5CDB),
+            fontWeight: FontWeight.bold,
+            fontFamily: 'DMSerifDisplay',
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left, color: Color(0xFF5B5CDB)),
+          onPressed: () {
+            Navigator.pop(
+                context); // Menambahkan fungsi untuk kembali ke halaman sebelumnya
+          },
+        ),
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               itemCount: _comments.length,
               itemBuilder: (context, index) {
                 final comment = _comments[index];
                 return ListTile(
-                  title: Text(comment.isiKomentar),
-                  subtitle: Text('Comment by User ${comment.idUser}'),
+                  leading: CircleAvatar(
+                    backgroundImage: comment.fotoUser != null
+                        ? NetworkImage(comment.fotoUser!)
+                        : const AssetImage('assets/images/default_avatar.png'),
+                  ),
+                  title: Text('${comment.username}'),
+                  subtitle: Text(comment.isiKomentar),
                   // Implement more UI as needed for each comment
                 );
               },

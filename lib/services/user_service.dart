@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class UserService {
   static const String baseUrl =
-      'http://192.168.1.8:5000'; // Replace with your actual API base URL
+      'http://10.0.2.2:5000'; // Replace with your actual API base URL
 
   Future<Map<String, dynamic>> getUser(int id) async {
     final response = await http.get(Uri.parse('$baseUrl/users/$id'));

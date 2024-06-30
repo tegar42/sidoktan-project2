@@ -250,7 +250,7 @@ class _ScanPageState extends State<ScanPage> {
                     confidence: item['hasil_prediksi'],
                     date: item['tanggal'],
                     imageUrl:
-                        'http://192.168.1.8:5000/images/${item['foto']}', // Adjust with your actual URL
+                        'http://10.0.2.2:5000/images/${item['foto']}', // Adjust with your actual URL
                   );
                 },
               ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DetectionService {
-  static const String baseUrl = 'http://192.168.1.8:5000';
+  static const String baseUrl = 'http://10.0.2.2:5000';
 
   static Future<Map<String, dynamic>> detectDisease(
       String plantType, String imagePath) async {
