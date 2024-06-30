@@ -7,7 +7,7 @@ import 'package:sidoktan/services/detection_disease_service.dart';
 import 'package:sidoktan/pages/detection/detection_result.dart';
 
 class ScanPage extends StatefulWidget {
-  const ScanPage({super.key});
+  const ScanPage({Key? key}) : super(key: key);
 
   @override
   State<ScanPage> createState() => _ScanPageState();
@@ -17,6 +17,7 @@ class _ScanPageState extends State<ScanPage> {
   final ImagePicker _picker = ImagePicker();
   final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   List<dynamic> historyData = []; // Update with your actual base URL
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -38,7 +39,15 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   Future<void> detectDisease(String plantType, String imagePath) async {
+    setState(() {
+      isLoading = true; // Show loading overlay
+    });
+
     var response = await DetectionService.detectDisease(plantType, imagePath);
+
+    setState(() {
+      isLoading = false; // Hide loading overlay
+    });
 
     // Check if response is valid
     if (response['status'] == '200') {
@@ -133,8 +142,7 @@ class _ScanPageState extends State<ScanPage> {
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Color(0xFF5B5CDB)),
           onPressed: () {
-            Navigator.pop(
-                context); // Menambahkan fungsi untuk kembali ke halaman sebelumnya
+            Navigator.pop(context);
           },
         ),
         bottom: const PreferredSize(
@@ -145,118 +153,130 @@ class _ScanPageState extends State<ScanPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-                image: DecorationImage(
-                  image: const AssetImage('assets/images/background-scan.png'),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    Colors.white.withOpacity(0.1),
-                    BlendMode.dstATop,
-                  ),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Start Diagnosis',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF5B5CDB)),
-                      textAlign: TextAlign.center,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                    image: DecorationImage(
+                      image:
+                          const AssetImage('assets/images/background-scan.png'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.white.withOpacity(0.1),
+                        BlendMode.dstATop,
+                      ),
                     ),
-                    const Text(
-                      'Select the type of plant',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        PlantOption(
-                          image: 'assets/images/tomatoes.png',
-                          title: 'Tomato',
-                          onTap: () {
-                            print('Tomato option tapped');
-                            _showImageSourceActionSheet('tomat');
-                          },
+                        const Text(
+                          'Start Diagnosis',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF5B5CDB)),
+                          textAlign: TextAlign.center,
                         ),
-                        PlantOption(
-                          image: 'assets/images/chilli.png',
-                          title: 'Chilli',
-                          onTap: () {
-                            print('Chilli option tapped');
-                            _showImageSourceActionSheet('cabai');
-                          },
+                        const Text(
+                          'Select the type of plant',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.grey),
+                          textAlign: TextAlign.center,
                         ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            PlantOption(
+                              image: 'assets/images/tomatoes.png',
+                              title: 'Tomato',
+                              onTap: () {
+                                print('Tomato option tapped');
+                                _showImageSourceActionSheet('tomat');
+                              },
+                            ),
+                            PlantOption(
+                              image: 'assets/images/chilli.png',
+                              title: 'Chilli',
+                              onTap: () {
+                                print('Chilli option tapped');
+                                _showImageSourceActionSheet('cabai');
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 3.0, horizontal: 5.0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF5B5CDB),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: const Text(
-                  'History',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
-                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 3.0, horizontal: 5.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5B5CDB),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: const Text(
+                      'History',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: historyData.length,
+                    itemBuilder: (context, index) {
+                      var item = historyData[index];
+                      return HistoryCard(
+                        diseaseName: item['nama_penyakit'],
+                        confidence: item['hasil_prediksi'],
+                        date: item['tanggal'],
+                        imageUrl:
+                            'http://10.0.2.2:5000/images/${item['foto']}', // Adjust with your actual URL
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isLoading)
+            Container(
+              color: Colors.white.withOpacity(1),
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: historyData.length,
-                itemBuilder: (context, index) {
-                  var item = historyData[index];
-                  return HistoryCard(
-                    diseaseName: item['nama_penyakit'],
-                    confidence: item['hasil_prediksi'],
-                    date: item['tanggal'],
-                    imageUrl:
-                        'http://10.0.2.2:5000/images/${item['foto']}', // Adjust with your actual URL
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
