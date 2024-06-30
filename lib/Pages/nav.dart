@@ -3,7 +3,7 @@ import 'package:sidoktan/pages/chatbot/chatbot_page.dart';
 import 'package:sidoktan/pages/iotlink/iotlink_page.dart';
 import 'package:sidoktan/pages/settings/setting_page.dart';
 import 'package:sidoktan/Widgets/bottom_navbar.dart';
-import 'package:sidoktan/pages/detection/scan_page.dart';
+import 'package:sidoktan/pages/detection/detection_page.dart';
 // import 'package:sidoktan/pages/post/home_page.dart';
 import 'package:sidoktan/pages/post/post_page.dart';
 
