@@ -20,8 +20,8 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   final List<PortalPetani> _posts = [];
   final PortalPetaniService _portalPetaniService = PortalPetaniService();
-  final UserService _userService = UserService(); // Instantiate UserService
-  bool _isLoading = true; // State to control loading indicator
+  final UserService _userService = UserService();
+  bool _isLoading = true;
 
   // State for handling post form
   final TextEditingController _postController = TextEditingController();
@@ -29,11 +29,14 @@ class _PostPageState extends State<PostPage> {
 
   Users? _currentUser; // Updated to use dynamic user data
 
+  PostSortOption _currentSortOption = PostSortOption.latest;
+
   @override
   void initState() {
     super.initState();
     _loadCurrentUser();
     _loadPosts();
+    _currentSortOption = PostSortOption.latest;
   }
 
   Future<void> _loadCurrentUser() async {
@@ -85,6 +88,19 @@ class _PostPageState extends State<PostPage> {
         _isLoading = false;
       });
     }
+  }
+
+  void _sortPosts(PostSortOption option) {
+    setState(() {
+      switch (option) {
+        case PostSortOption.latest:
+          _posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          break;
+        case PostSortOption.popularity:
+          _posts.sort((a, b) => b.likes.compareTo(a.likes));
+          break;
+      }
+    });
   }
 
   String? _getProfileImageUrl(String? filename) {
@@ -175,6 +191,12 @@ class _PostPageState extends State<PostPage> {
     await _loadPosts();
   }
 
+  void _showSortOptions(BuildContext context) {
+    setState(() {
+      _currentSortOption = _currentSortOption;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,7 +265,48 @@ class _PostPageState extends State<PostPage> {
                       hasImage: _image != null,
                       image: _image,
                     ),
-                    const Divider(),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(width: 1.0, color: Colors.grey),
+                          bottom: BorderSide(width: 1.0, color: Colors.grey),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Sort by',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          DropdownButton<PostSortOption>(
+                            value: _currentSortOption,
+                            icon: const Icon(Icons.arrow_drop_down),
+                            onChanged: (PostSortOption? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _sortPosts(newValue);
+                                });
+                              }
+                            },
+                            items: <PostSortOption>[
+                              PostSortOption.latest,
+                              PostSortOption.popularity,
+                            ].map<DropdownMenuItem<PostSortOption>>(
+                                (PostSortOption value) {
+                              return DropdownMenuItem<PostSortOption>(
+                                value: value,
+                                child: Text(value == PostSortOption.latest
+                                    ? 'latest'
+                                    : 'popularity'),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     ListView.builder(
                       shrinkWrap: true,
@@ -362,4 +425,9 @@ class _PostPageState extends State<PostPage> {
             ),
     );
   }
+}
+
+enum PostSortOption {
+  latest,
+  popularity,
 }
