@@ -3,7 +3,6 @@ import 'dart:io';
 
 class PostFormWidget extends StatelessWidget {
   final TextEditingController postController;
-  final FocusNode focusNode;
   final VoidCallback pickImageFromCamera;
   final VoidCallback pickImageFromGallery;
   final VoidCallback addPost;
@@ -13,7 +12,6 @@ class PostFormWidget extends StatelessWidget {
   const PostFormWidget({
     super.key,
     required this.postController,
-    required this.focusNode,
     required this.pickImageFromCamera,
     required this.pickImageFromGallery,
     required this.addPost,
@@ -44,7 +42,6 @@ class PostFormWidget extends StatelessWidget {
                   children: [
                     TextFormField(
                       controller: postController,
-                      focusNode: focusNode,
                       maxLines: null,
                       decoration: InputDecoration(
                         hintText: 'What are you thinking right now?',

@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:image_picker/image_picker.dart';
 import 'package:sidoktan/models/portal_petani.dart';
-import 'package:sidoktan/models/user_model.dart';
+import 'package:sidoktan/models/user.dart';
 import 'package:sidoktan/services/portal_petani_service.dart';
+import 'package:sidoktan/services/user_service.dart'; // Import UserService
 import 'package:sidoktan/pages/post/comments_page.dart';
-import 'package:sidoktan/Widgets/post_form.dart'; // Import widget PostFormWidget
+import 'package:sidoktan/pages/profile_page.dart';
+import 'package:sidoktan/Widgets/post_form.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -18,25 +20,36 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   final List<PortalPetani> _posts = [];
   final PortalPetaniService _portalPetaniService = PortalPetaniService();
+  final UserService _userService = UserService(); // Instantiate UserService
   bool _isLoading = true; // State to control loading indicator
 
   // State for handling post form
   final TextEditingController _postController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
   File? _image;
 
-  final User currentUser = User(
-    idUser: 7,
-    username: "Jordan Poole",
-    profilePictureUrl: "assets/images/poole.png",
-    email: 'test@example.com',
-    password: 'password123',
-  );
+  Users? _currentUser; // Updated to use dynamic user data
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     _loadPosts();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    try {
+      final user = await _userService.getUser(8);
+      if (user != null && user['data'] != null) {
+        setState(() {
+          _currentUser = Users.fromJson(user['data']);
+        });
+      } else {
+        print('User data is null or invalid');
+      }
+    } catch (e) {
+      print('Error loading current user: $e');
+      // Handle error as per your application's needs
+    }
   }
 
   Future<void> _loadPosts() async {
@@ -50,7 +63,6 @@ class _PostPageState extends State<PostPage> {
       for (var postJson in posts) {
         final post = PortalPetani.fromJson(postJson);
 
-        // Fetch comments for each post and count them
         final comments =
             await _portalPetaniService.getComments(post.idPortalPetani);
         post.commentCount = comments.length;
@@ -79,15 +91,14 @@ class _PostPageState extends State<PostPage> {
     if (filename == null || filename.isEmpty) {
       return null;
     }
-    const baseUrl = 'http://10.0.2.2:5000/images/profile/';
-    return '$baseUrl$filename';
+    return _userService.getProfileImageUrl(filename);
   }
 
   String? _getPostImageUrl(String? filename) {
     if (filename == null || filename.isEmpty) {
       return null;
     }
-    const baseUrl = 'http://10.0.2.2:5000/images/portal_petani/';
+    const baseUrl = 'http://192.168.1.8:5000/images/portal_petani/';
     return '$baseUrl$filename';
   }
 
@@ -95,14 +106,14 @@ class _PostPageState extends State<PostPage> {
     try {
       if (post.isLiked) {
         await _portalPetaniService.unlikePost(
-            currentUser.idUser, post.idPortalPetani);
+            _currentUser!.id, post.idPortalPetani);
         setState(() {
           post.isLiked = false;
           post.likes--; // Update local post object
         });
       } else {
         await _portalPetaniService.likePost(
-            currentUser.idUser, post.idPortalPetani);
+            _currentUser!.id, post.idPortalPetani);
         setState(() {
           post.isLiked = true;
           post.likes++; // Update local post object
@@ -127,7 +138,7 @@ class _PostPageState extends State<PostPage> {
     return timeago.format(timestamp, allowFromNow: true, locale: 'en_short');
   }
 
-  void _addPost(User user) {
+  void _addPost(Users user) {
     if (_postController.text.isEmpty && _image == null) return;
 
     setState(() {
@@ -188,12 +199,28 @@ class _PostPageState extends State<PostPage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              if (_currentUser != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        UserProfilePage(userId: _currentUser!.id),
+                  ),
+                );
+              } else {
+                print('Current user is null or not loaded yet.');
+              }
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CircleAvatar(
                 radius: 18.0,
-                backgroundImage: AssetImage(currentUser.profilePictureUrl),
+                backgroundImage: _currentUser != null
+                    ? NetworkImage(
+                        _userService.getProfileImageUrl(_currentUser!.foto),
+                      )
+                    : const AssetImage('assets/images/profile.png'),
               ),
             ),
           ),
@@ -210,10 +237,9 @@ class _PostPageState extends State<PostPage> {
                   children: [
                     PostFormWidget(
                       postController: _postController,
-                      focusNode: _focusNode,
                       pickImageFromCamera: _pickImageFromCamera,
                       pickImageFromGallery: _pickImageFromGallery,
-                      addPost: () => _addPost(currentUser),
+                      addPost: () => _addPost(_currentUser!),
                       hasImage: _image != null,
                       image: _image,
                     ),

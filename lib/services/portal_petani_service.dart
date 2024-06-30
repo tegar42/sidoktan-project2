@@ -2,9 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PortalPetaniService {
-  static const String baseUrl =
-      'http://10.0.2.2:5000'; // Adjust with your API URL
-
+  static const String baseUrl = 'http://192.168.1.8:5000';
   Future<List<dynamic>> getPosts(String status) async {
     final response =
         await http.get(Uri.parse('$baseUrl/portal_petani?status=$status'));

@@ -9,8 +9,17 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   final List<Map<String, dynamic>> _messages = [];
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
 
   void _sendMessage(String message) {
     if (message.trim().isEmpty) return;
@@ -19,7 +28,6 @@ class _ChatScreenState extends State<ChatScreen> {
       _isProcessing = true;
     });
     _controller.clear();
-    FocusScope.of(context).unfocus(); // Menyembunyikan keyboard
     _getResponse(message);
   }
 
@@ -31,6 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add({"message": response, "isUser": false});
       _isProcessing = false;
     });
+    _focusNode.requestFocus();
   }
 
   String _simulateResponse(String message) {
@@ -124,6 +133,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focusNode,
+                    maxLines: null,
                     decoration: InputDecoration(
                       hintText: "Input message",
                       border: OutlineInputBorder(

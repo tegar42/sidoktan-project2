@@ -15,7 +15,7 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage> {
   final ImagePicker _picker = ImagePicker();
-  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   List<dynamic> historyData = []; // Update with your actual base URL
 
   @override
@@ -250,7 +250,7 @@ class _ScanPageState extends State<ScanPage> {
                     confidence: item['hasil_prediksi'],
                     date: item['tanggal'],
                     imageUrl:
-                        'http://10.0.2.2:5000/images/${item['foto']}', // Adjust with your actual URL
+                        'http://192.168.1.8:5000/images/${item['foto']}', // Adjust with your actual URL
                   );
                 },
               ),
