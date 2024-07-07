@@ -10,6 +10,24 @@ import 'package:sidoktan/pages/post/comments_page.dart';
 import 'package:sidoktan/pages/profile_page.dart';
 import 'package:sidoktan/Widgets/post_form.dart';
 
+abstract class PostSortingStrategy {
+  void sort(List<PortalPetani> posts);
+}
+
+class SortByLatest implements PostSortingStrategy {
+  @override
+  void sort(List<PortalPetani> posts) {
+    posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+}
+
+class SortByPopularity implements PostSortingStrategy {
+  @override
+  void sort(List<PortalPetani> posts) {
+    posts.sort((a, b) => b.likes.compareTo(a.likes));
+  }
+}
+
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
 
@@ -23,25 +41,42 @@ class _PostPageState extends State<PostPage> {
   final UserService _userService = UserService();
   bool _isLoading = true;
 
-  // State for handling post form
   final TextEditingController _postController = TextEditingController();
   File? _image;
 
-  Users? _currentUser; // Updated to use dynamic user data
+  Users? _currentUser;
 
-  PostSortOption _currentSortOption = PostSortOption.latest;
+  late PostSortingStrategy _sortingStrategy;
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUser();
     _loadPosts();
-    _sortPosts(_currentSortOption);
+    _setSortingStrategy(PostSortOption.latest);
+  }
+
+  void _setSortingStrategy(PostSortOption option) {
+    setState(() {
+      switch (option) {
+        case PostSortOption.latest:
+          _sortingStrategy = SortByLatest();
+          break;
+        case PostSortOption.popularity:
+          _sortingStrategy = SortByPopularity();
+          break;
+      }
+      _sortPosts(); // Sort posts based on the selected option
+    });
+  }
+
+  void _sortPosts() {
+    _sortingStrategy.sort(_posts);
   }
 
   Future<void> _loadCurrentUser() async {
     try {
-      final user = await _userService.getUser(8);
+      final user = await _userService.getUser(9);
       if (user['data'] != null) {
         setState(() {
           _currentUser = Users.fromJson(user['data']);
@@ -89,19 +124,6 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
-  void _sortPosts(PostSortOption option) {
-    setState(() {
-      switch (option) {
-        case PostSortOption.latest:
-          _posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          break;
-        case PostSortOption.popularity:
-          _posts.sort((a, b) => b.likes.compareTo(a.likes));
-          break;
-      }
-    });
-  }
-
   String? _getProfileImageUrl(String? filename) {
     if (filename == null || filename.isEmpty) {
       return null;
@@ -124,14 +146,14 @@ class _PostPageState extends State<PostPage> {
             _currentUser!.id, post.idPortalPetani);
         setState(() {
           post.isLiked = false;
-          post.likes--; // Update local post object
+          post.likes--;
         });
       } else {
         await _portalPetaniService.likePost(
             _currentUser!.id, post.idPortalPetani);
         setState(() {
           post.isLiked = true;
-          post.likes++; // Update local post object
+          post.likes++;
         });
       }
 
@@ -153,15 +175,39 @@ class _PostPageState extends State<PostPage> {
     return timeago.format(timestamp, allowFromNow: true, locale: 'en_short');
   }
 
-  void _addPost(Users user) {
+  void _addPost(Users user) async {
     if (_postController.text.isEmpty && _image == null) return;
 
-    setState(() {
-      // Update your logic to add the new post to _posts list or save it to API
-      // Example: _posts.insert(0, newPost);
-      _postController.clear();
-      _image = null;
-    });
+    try {
+      setState(() {
+        _isLoading = true; // Set loading state while adding post
+      });
+
+      final response = await _portalPetaniService.createPost(
+        user.id,
+        _postController.text,
+        'publish',
+        imagePath: _image?.path,
+      );
+
+      // Assuming response handling logic here (e.g., update UI with new post)
+      // You might want to fetch new posts or update existing list
+
+      setState(() {
+        _isLoading = false; // Clear loading state after adding post
+        _postController.clear(); // Clear post text field
+        _image = null; // Clear selected image
+      });
+
+      // Optionally, refresh posts after adding a new post
+      _handleRefresh();
+    } catch (e) {
+      print('Error adding post: $e');
+      setState(() {
+        _isLoading = false; // Clear loading state on error
+      });
+      // Handle error as per your application's needs
+    }
   }
 
   final ImagePicker _picker = ImagePicker();
@@ -211,12 +257,6 @@ class _PostPageState extends State<PostPage> {
     } else {
       print('Current user is null or not loaded yet.');
     }
-  }
-
-  void _showSortOptions(BuildContext context) {
-    setState(() {
-      _currentSortOption = _currentSortOption;
-    });
   }
 
   @override
@@ -304,15 +344,13 @@ class _PostPageState extends State<PostPage> {
                             style: TextStyle(fontSize: 16),
                           ),
                           DropdownButton<PostSortOption>(
-                            value: _currentSortOption,
+                            value: _sortingStrategy is SortByLatest
+                                ? PostSortOption.latest
+                                : PostSortOption.popularity,
                             icon: const Icon(Icons.filter_alt),
                             onChanged: (PostSortOption? newValue) {
                               if (newValue != null) {
-                                setState(() {
-                                  _currentSortOption = newValue;
-                                  _sortPosts(
-                                      newValue); // Sort posts based on the selected option
-                                });
+                                _setSortingStrategy(newValue);
                               }
                             },
                             items: <PostSortOption>[
@@ -377,6 +415,7 @@ class _PostPageState extends State<PostPage> {
                                             imageUrl,
                                             fit: BoxFit.cover,
                                             width: double.infinity,
+                                            height: 200,
                                           ),
                                         Row(
                                           mainAxisAlignment:

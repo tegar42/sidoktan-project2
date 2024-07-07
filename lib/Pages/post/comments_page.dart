@@ -32,6 +32,8 @@ class _CommentPageState extends State<CommentPage> {
     try {
       final comments = await _portalPetaniService.getComments(widget.postId);
 
+      _comments.clear();
+
       // Iterate through comments to fetch user information
       for (var jsonComment in comments) {
         final comment = Komentar.fromJson(jsonComment);
@@ -60,8 +62,7 @@ class _CommentPageState extends State<CommentPage> {
     if (commentText.isEmpty) return;
 
     try {
-      final Users currentUser =
-          widget.currentUser; // Use currentUser from widget
+      final Users currentUser = widget.currentUser;
 
       await _portalPetaniService.addComment(
           currentUser.id, widget.postId, commentText);
@@ -102,8 +103,7 @@ class _CommentPageState extends State<CommentPage> {
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Color(0xFF5B5CDB)),
           onPressed: () {
-            Navigator.pop(
-                context); // Menambahkan fungsi untuk kembali ke halaman sebelumnya
+            Navigator.pop(context);
           },
         ),
       ),
@@ -123,7 +123,6 @@ class _CommentPageState extends State<CommentPage> {
                   ),
                   title: Text('${comment.username}'),
                   subtitle: Text(comment.isiKomentar),
-                  // Implement more UI as needed for each comment
                 );
               },
             ),

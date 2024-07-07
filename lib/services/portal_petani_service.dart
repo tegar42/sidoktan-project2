@@ -2,7 +2,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PortalPetaniService {
+  static final PortalPetaniService _instance = PortalPetaniService._internal();
+
+  factory PortalPetaniService() {
+    return _instance;
+  }
+
+  PortalPetaniService._internal();
+
   static const String baseUrl = 'http://10.0.2.2:5000';
+
   Future<List<dynamic>> getPosts(String status) async {
     final response =
         await http.get(Uri.parse('$baseUrl/portal_petani?status=$status'));
@@ -124,16 +133,14 @@ class PortalPetaniService {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      List<dynamic> data = jsonData['data']; // Extract 'data' array from JSON
+      List<dynamic> data = jsonData['data'];
 
       if (data.isNotEmpty) {
-        // Assuming there's only one object in 'data' array based on your example
-        int totalLikes = data[0]['total_likes'] ??
-            0; // Extract 'total_likes' from the first object
+        int totalLikes = data[0]['total_likes'] ?? 0;
 
         return totalLikes;
       } else {
-        return 0; // Handle case where 'data' array is empty
+        return 0;
       }
     } else {
       throw Exception('Failed to load likes');

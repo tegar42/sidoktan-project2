@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sidoktan/Widgets/setting_items.dart';
+import 'package:sidoktan/pages/settings/set_profile.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -33,7 +34,10 @@ class SettingsPage extends StatelessWidget {
             subtitle:
                 'Set your account like your username, phone number, and email address',
             onTap: () {
-              // Implement navigation or action
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SetProfile()),
+              );
             },
           ),
           SettingItem(

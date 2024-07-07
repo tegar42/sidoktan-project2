@@ -100,14 +100,41 @@ class DetectionResultPage extends StatelessWidget {
                       'Error loading recommendations: ${snapshot.error}');
                 } else if (!snapshot.hasData ||
                     snapshot.data!.containsKey('error')) {
-                  return const Text('No recommendations available.');
+                  return Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDAD8F8),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Recommendations:',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          'Biological Control: No Recommendations Available',
+                          style: TextStyle(fontSize: 14.0),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          'Chemical Control: No Recommendations Available',
+                          style: TextStyle(fontSize: 14.0),
+                        ),
+                      ],
+                    ),
+                  );
                 } else {
                   var data = snapshot.data!;
                   return Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: const Color(
-                          0xFFDAD8F8), // Background color of the recommendations box
+                      color: const Color(0xFFDAD8F8),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(

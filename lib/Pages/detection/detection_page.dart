@@ -7,7 +7,7 @@ import 'package:sidoktan/services/detection_disease_service.dart';
 import 'package:sidoktan/pages/detection/detection_result.dart';
 
 class ScanPage extends StatefulWidget {
-  const ScanPage({Key? key}) : super(key: key);
+  const ScanPage({super.key});
 
   @override
   State<ScanPage> createState() => _ScanPageState();
@@ -272,7 +272,7 @@ class _ScanPageState extends State<ScanPage> {
           if (isLoading)
             Container(
               color: Colors.white.withOpacity(1),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
